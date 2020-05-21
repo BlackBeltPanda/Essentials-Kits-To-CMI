@@ -7,7 +7,6 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import com.Zrips.CMI.CMI;
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.Kit;
@@ -36,7 +35,9 @@ public class EssentialsKitsToCMI extends JavaPlugin {
                         Map<String,Object> essKitData = essentials.getKits().getKit(essentialsKit.getName());
                         com.Zrips.CMI.Modules.Kits.Kit cmiKit = new com.Zrips.CMI.Modules.Kits.Kit(kitName);
                         List<String> commands = new ArrayList<String>();
-                        for (String kitItem : essentialsKit.getItems()) {
+                        ItemStack icon = null;
+                        for (int i = 0; i < essentialsKit.getItems().size(); i++) {
+                            String kitItem = essentialsKit.getItems().get(i);
                             // Convert placeholders
                             kitItem = kitItem.replaceAll("\\{player\\}", "\\{USERNAME\\}");
                             // Money
@@ -81,7 +82,8 @@ public class EssentialsKitsToCMI extends JavaPlugin {
                                 }
                             }
                             
-                            cmiKit.addItem(metaItemStack.getItemStack());
+                            cmiKit.setItem(i, metaItemStack.getItemStack());
+                            if (icon == null) icon = metaItemStack.getItemStack();
                         }
                         
                         // Set all the options
@@ -93,12 +95,12 @@ public class EssentialsKitsToCMI extends JavaPlugin {
                         cmiKit.setEnabled(true);
                         cmiKit.setDropItems(essentials.getSettings().isDropItemsIfFull());
                         cmiKit.setMaxUsages(delay < 0 ? 1 : -1);
-                        cmiKit.setIcon(cmiKit.getItems().get(0));
                         cmiKit.setIconOff(new ItemStack(Material.BARRIER));
+                        cmiKit.setIcon((icon != null && icon.getType() != Material.AIR) ? icon : new ItemStack(Material.STONE));
                         cmi.getKitsManager().addKit(cmiKit);
-                        cmi.getKitsManager().safeSave();
                     }
                 }
+                cmi.getKitsManager().safeSave();
             }
             catch (Exception e) {
                 e.printStackTrace();
