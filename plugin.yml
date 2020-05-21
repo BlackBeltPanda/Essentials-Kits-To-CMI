@@ -1,0 +1,6 @@
+name: EssentialsKitsToCMI
+main: main.java.BlackBeltPanda.EssentialsKitsToCMI.EssentialsKitsToCMI
+version: 1.0
+api-version: 1.13
+author: BlackBeltPanda
+depend: [Essentials, CMI]
