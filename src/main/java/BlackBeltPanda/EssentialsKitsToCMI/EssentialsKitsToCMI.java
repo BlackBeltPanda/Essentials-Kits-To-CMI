@@ -4,6 +4,8 @@ package main.java.BlackBeltPanda.EssentialsKitsToCMI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,28 +15,19 @@ import com.earth2me.essentials.Kit;
 import com.earth2me.essentials.MetaItemStack;
 
 public class EssentialsKitsToCMI extends JavaPlugin {
-
-    boolean essentialsLoaded;
-    boolean cmiLoaded;
-    Essentials essentials;
-    CMI cmi;
     
     @Override
     public void onEnable() {
-        essentialsLoaded = getServer().getPluginManager().getPlugin("Essentials") != null;
-        cmiLoaded = getServer().getPluginManager().getPlugin("CMI") != null;
-        
-        if (essentialsLoaded && cmiLoaded) {
-            essentials = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
-            cmi = CMI.getInstance();
+        Essentials essentials = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
+        CMI cmi = CMI.getInstance();
             try {
-                final String[] kitList = essentials.getKits().listKits(essentials, null).split(" ");
+                final String[] kitList = Objects.requireNonNull(essentials).getKits().listKits(essentials, null).split(" ");
                 for (final String kitName : kitList) {
                     if (!kitName.isEmpty()) {
                         Kit essentialsKit = new Kit(kitName, essentials);
                         Map<String,Object> essKitData = essentials.getKits().getKit(essentialsKit.getName());
                         com.Zrips.CMI.Modules.Kits.Kit cmiKit = new com.Zrips.CMI.Modules.Kits.Kit(kitName);
-                        List<String> commands = new ArrayList<String>();
+                        List<String> commands = new ArrayList<>();
                         ItemStack icon = null;
                         for (int i = 0; i < essentialsKit.getItems().size(); i++) {
                             String kitItem = essentialsKit.getItems().get(i);
@@ -61,7 +54,7 @@ public class EssentialsKitsToCMI extends JavaPlugin {
                             
                             // Items
                             final String[] parts = kitItem.split(" +");
-                            ItemStack parseStack = new ItemStack(Material.AIR);
+                            ItemStack parseStack;
                             try {
                                 parseStack = essentials.getItemDb().get(parts[0], parts.length > 1 ? Integer.parseInt(parts[1]) : 1);
                             } catch (Exception e) {
@@ -105,12 +98,6 @@ public class EssentialsKitsToCMI extends JavaPlugin {
             catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    @Override
-    public void onDisable() {
-
     }
     
     private String sanitizeCurrencyString(String input, String symbol, boolean suffix) {
